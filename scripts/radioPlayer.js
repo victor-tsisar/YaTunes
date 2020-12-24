@@ -6,7 +6,10 @@ export const radioPlayerInit = () => {
         radioHeaderBig = document.querySelector('.radio-header__big'),
         radioNavigation = document.querySelector('.radio-navigation'),
         radioItem = document.querySelectorAll('.radio-item'),
-        radioStop = document.querySelector('.radio-stop');
+        radioStop = document.querySelector('.radio-stop'),
+        radioIconMute = document.querySelector('.radio-icon__mute'),
+        radioIconTalk = document.querySelector('.radio-icon__talk'),
+        radioVolume = document.querySelector('.radio-volume');
 
     const audio = new Audio();
     audio.type = 'audio/aac';
@@ -28,7 +31,7 @@ export const radioPlayerInit = () => {
 
     radioNavigation.addEventListener('change', event => {
         const target = event.target;
-        
+
         const parrent = target.closest('.radio-item');  // получение даных радиостанции
         radioItem.forEach(item => item.classList.remove('select'));  // обводка активной станции
         parrent.classList.add('select');
@@ -57,4 +60,32 @@ export const radioPlayerInit = () => {
 
         changeIconPlay();
     });
-}
+
+    // Регулировка звука
+    radioVolume.addEventListener('input', () => {
+        audio.volume = radioVolume.value / 100;
+        if (audio.volume === 0) {
+            radioIconMute.classList.add('mute');
+        } else {
+            radioIconMute.classList.remove('mute');
+        }
+    });
+
+    radioIconTalk.addEventListener('click', () => {
+        radioIconMute.classList.remove('mute');
+        audio.volume = 1;
+        radioVolume.value = audio.volume * 100;
+    });
+    radioIconMute.addEventListener('click', () => {
+        radioIconMute.classList.toggle('mute');
+        audio.volume = 0;
+        radioVolume.value = audio.volume * 100;
+    });
+
+    radioVolume.value = audio.volume * 100;
+
+    radioPlayerInit.stop = () =>{
+        audio.pause();
+        changeIconPlay();
+    }
+};

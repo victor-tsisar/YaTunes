@@ -1,3 +1,5 @@
+import { addZero } from './supScript.js';  //дополнительные функции
+
 export const videoPlayerInit = () => {
     console.log('Video Init');
 
@@ -42,9 +44,6 @@ export const videoPlayerInit = () => {
         videoPlayer.currentTime = 0;
     }
 
-    // Добавление нулей в счётчик времени
-    const addZero = n => n < 10 ? '0' + n : n;
-
     // Значок отключения звука
     const changeRangeValue = () => {
         if (videoPlayer.volume === 0) {
@@ -60,23 +59,22 @@ export const videoPlayerInit = () => {
         const valueVolume = videoVolume.value;
         videoPlayer.volume = valueVolume / 100;
 
-        changeRangeValue();        
+        changeRangeValue();
     }
 
     // Включить/выключить звук
-    const changeVolume = () => {
-        videoIconTalk.addEventListener('click', () => {
-            videoIconMute.classList.remove('mute');
-            videoPlayer.volume = 1;
-            videoVolume.value = videoPlayer.volume * 100;
-        });
-
-        videoIconMute.addEventListener('click', () => {
-            videoIconMute.classList.toggle('mute');
-            videoPlayer.volume = 0;
-            videoVolume.value = videoPlayer.volume * 0;
-        });
+    const maxSound = () => {
+        videoIconMute.classList.remove('mute');
+        videoPlayer.volume = 1;
+        videoVolume.value = videoPlayer.volume * 100;
     }
+    const muteSound = () => {
+        videoIconMute.classList.toggle('mute');
+        videoPlayer.volume = 0;
+        videoVolume.value = videoPlayer.volume * 0;
+    }
+    videoIconTalk.addEventListener('click', maxSound);
+    videoIconMute.addEventListener('click', muteSound);
 
     videoPlayer.addEventListener('click', togglePlay);
     videoButtonPlay.addEventListener('click', togglePlay);
@@ -91,7 +89,7 @@ export const videoPlayerInit = () => {
         const duration = videoPlayer.duration;
 
         // Определение значение ползунка и переключение видео
-        videoProgress.value = (currentTime / duration) *100;
+        videoProgress.value = (currentTime / duration) * 100;
 
         // Расчет времени работы плеера
         let minutePassed = Math.floor(currentTime / 60);
@@ -111,11 +109,30 @@ export const videoPlayerInit = () => {
 
         videoPlayer.currentTime = (value * duration) / 100;
     });
-
     // Открыть на полный екран
     videoFullscreen.addEventListener('click', () => {
         videoPlayer.requestFullscreen();
+        console.dir(videoPlayer);
     });
+    // добавление дефолтной панели управления видео
+    videoPlayer.addEventListener('fullscreenchange', () => {
+        if (document.fullscreen) {
+            videoPlayer.controls = true;
+            // videoPlayer.volume = videoPlayer.volume;
+            // if (videoPlayer.muted) {
+            //     console.log('MUTED');
+            //     videoIconMute.classList.add('mute');
+            //     videoPlayer.volume = 0;
+            //     videoVolume.value = 0;
+            // } else {
+            //     videoIconMute.classList.remove('mute');
+            //     videoPlayer.volume = videoPlayer.volume;
+            //     videoVolume.value = videoPlayer.volume * 1;
+            // }
+        } else {
+            videoPlayer.controls = false;
+        }
+    })
 
     // Связь шкалы громкости полноекранной версии и дефолтной
     videoVolume.addEventListener('input', changeValue);
@@ -127,5 +144,10 @@ export const videoPlayerInit = () => {
 
     // Вызов функции для установления значения громкости видео 
     changeValue();  // по умолчанию
-    changeVolume();  // кнопки 0 - 100
-}
+
+    videoPlayerInit.stop = () => {
+        videoPlayer.pause();
+        toggleIcon();
+    }
+
+};
