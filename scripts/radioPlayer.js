@@ -14,6 +14,9 @@ export const radioPlayerInit = () => {
     const audio = new Audio();
     audio.type = 'audio/aac';
 
+    let audioVolumeTemp = audio.volume;
+    let audioValueTemp = radioVolume.value;
+
     radioStop.disabled = true;  // Кнопка играть / пауза блокирована
 
     // Смена вида кнопки играть / пауза
@@ -70,7 +73,7 @@ export const radioPlayerInit = () => {
             radioIconMute.classList.remove('mute');
         }
     });
-
+    
     radioIconTalk.addEventListener('click', () => {
         radioIconMute.classList.remove('mute');
         audio.volume = 1;
@@ -78,11 +81,17 @@ export const radioPlayerInit = () => {
     });
     radioIconMute.addEventListener('click', () => {
         radioIconMute.classList.toggle('mute');
-        audio.volume = 0;
-        radioVolume.value = audio.volume * 100;
+        if (audio.volume) {
+            audioVolumeTemp = audio.volume;
+            audioValueTemp = radioVolume.value;
+            audio.volume = 0;
+        } else {
+            audio.volume = audioVolumeTemp;
+            radioVolume = audioValueTemp;
+        }
     });
 
-    radioVolume.value = audio.volume * 100;
+    radioVolume.value = audio.volume * 100;  // стартовая громкость
 
     radioPlayerInit.stop = () =>{
         audio.pause();

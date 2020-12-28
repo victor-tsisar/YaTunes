@@ -14,6 +14,9 @@ export const videoPlayerInit = () => {
         videoVolume = document.querySelector('.video-volume'),
         videoFullscreen = document.querySelector('.video-fullscreen');
 
+    let videoVolumeTemp = videoPlayer.volume;
+    let videoValueTemp = videoVolume.value;
+
     // Работа с кнопкой Играть/Пауза
     const toggleIcon = () => {
         if (videoPlayer.paused) {
@@ -61,20 +64,6 @@ export const videoPlayerInit = () => {
 
         changeRangeValue();
     }
-
-    // Включить/выключить звук
-    const maxSound = () => {
-        videoIconMute.classList.remove('mute');
-        videoPlayer.volume = 1;
-        videoVolume.value = videoPlayer.volume * 100;
-    }
-    const muteSound = () => {
-        videoIconMute.classList.toggle('mute');
-        videoPlayer.volume = 0;
-        videoVolume.value = videoPlayer.volume * 0;
-    }
-    videoIconTalk.addEventListener('click', maxSound);
-    videoIconMute.addEventListener('click', muteSound);
 
     videoPlayer.addEventListener('click', togglePlay);
     videoButtonPlay.addEventListener('click', togglePlay);
@@ -132,10 +121,39 @@ export const videoPlayerInit = () => {
         } else {
             videoPlayer.controls = false;
         }
-    })
+    });
+
+    // Регулировка звука
+    const maxSound = () => {
+        videoIconMute.classList.remove('mute');
+        videoPlayer.volume = 1;
+        videoVolume.value = videoPlayer.volume * 100;
+    }
+
+    videoVolume.addEventListener('input', () => { 
+        videoPlayer.volume = videoVolume.value / 100;
+        if (videoPlayer.volume === 0) {
+            audioIconMute.classList.add('mute');
+        } else {
+            audioIconMute.classList.remove('mute');
+        }
+    });
+
+    videoIconTalk.addEventListener('click', maxSound);
+
+    videoIconMute.addEventListener('click', () => {
+        videoIconMute.classList.toggle('mute');
+        if (videoPlayer.volume) {
+            videoVolumeTemp = videoPlayer.volume;
+            videoValueTemp = videoVolume.value;
+            videoPlayer.volume = 0;
+        } else {
+            videoPlayer.volume = videoVolumeTemp;
+            videoVolume = videoValueTemp;
+        }
+    });
 
     // Связь шкалы громкости полноекранной версии и дефолтной
-    videoVolume.addEventListener('input', changeValue);
     videoPlayer.addEventListener('volumechange', () => {
         videoVolume.value = Math.round(videoPlayer.volume * 100);
 

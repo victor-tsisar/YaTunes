@@ -17,6 +17,9 @@ export const musicPlayerInit = () => {
         audioIconTalk = document.querySelector('.audio-icon__talk'),
         audioVolume = document.querySelector('.audio-volume');
 
+    let musicVolumeTemp = audioPlayer.volume;
+    let musicValueTemp = audioVolume.value;
+
     // Список треков
     const playlist = ['hello', 'flow', 'speed'];
     let trackIndex = 0;
@@ -133,14 +136,26 @@ export const musicPlayerInit = () => {
     });
     audioIconMute.addEventListener('click', () => {
         audioIconMute.classList.toggle('mute');
-        audioPlayer.volume = 0;
-        audioVolume.value = audioPlayer.volume * 100;
+
+        if (audioPlayer.volume) {
+            musicVolumeTemp = audioPlayer.volume;
+            musicValueTemp = audioVolume.value;
+            audioPlayer.volume = 0;
+        } else {
+            audioPlayer.volume = musicVolumeTemp;
+            audioVolume = musicValueTemp;
+        }
     });
 
-    audioVolume.value = audioPlayer.volume * 100;
+    audioVolume.value = audioPlayer.volume * 100;  // стартовая громкость
 
     musicPlayerInit.stop = () => {
-        audioPlayer.pause();
+        if (!audioPlayer.paused) {
+            audioPlayer.pause();
+            audio.classList.remove('play');
+            audioButtonPlay.classList.remove('fa-pause');
+            audioButtonPlay.classList.add('fa-play');
+        }
     }
 
 };
