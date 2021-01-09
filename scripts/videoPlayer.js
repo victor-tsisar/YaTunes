@@ -130,12 +130,12 @@ export const videoPlayerInit = () => {
         videoVolume.value = videoPlayer.volume * 100;
     }
 
-    videoVolume.addEventListener('input', () => { 
+    videoVolume.addEventListener('input', () => {
         videoPlayer.volume = videoVolume.value / 100;
         if (videoPlayer.volume === 0) {
-            audioIconMute.classList.add('mute');
+            videoIconMute.classList.add('mute');
         } else {
-            audioIconMute.classList.remove('mute');
+            videoIconMute.classList.remove('mute');
         }
     });
 
@@ -156,8 +156,15 @@ export const videoPlayerInit = () => {
     // Связь шкалы громкости полноекранной версии и дефолтной
     videoPlayer.addEventListener('volumechange', () => {
         videoVolume.value = Math.round(videoPlayer.volume * 100);
-
+        
         changeRangeValue();
+        // if (videoPlayer.muted === true) {
+        //     videoIconMute.classList.add('mute');
+        //     videoPlayer.volume = 0;
+        // } else if (videoPlayer.muted === false) {
+        //     // videoIconMute.classList.remove('mute');
+        //     videoPlayer.volume = videoVolume.value;
+        // }
     });
 
     // Вызов функции для установления значения громкости видео 
